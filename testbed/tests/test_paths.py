@@ -1,5 +1,4 @@
 import os
-import shutil
 
 import pytest
 
@@ -11,10 +10,8 @@ async def test_app_paths(app, app_probe, attr):
     path = getattr(app.paths, attr)
     assert path == getattr(app_probe, f"{attr}_path")
 
+    tempfile = path / f"{attr}-{os.getpid()}.txt"
     try:
-        # We can create a file in the app path
-        tempfile = path / f"{attr}-{os.getpid()}.txt"
-
         # We can write to a file in the app path
         with tempfile.open("w", encoding="utf-8") as f:
             f.write(f"Hello {attr}\n")
@@ -28,11 +25,9 @@ async def test_app_paths(app, app_probe, attr):
         assert newpath == path
 
     finally:
-        try:
-            if path.exists():
-                shutil.rmtree(path)
-        except PermissionError:
-            pass
+        # config and data can be the same folder, so only remove the file
+        # this test created, not the whole folder.
+        tempfile.unlink(missing_ok=True)
 
 
 @pytest.mark.parametrize("attr", ["desktop", "documents", "downloads", "pictures"])

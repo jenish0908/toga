@@ -98,11 +98,11 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return self._app_dir / "Config"
+        return self._app_dir
 
     @property
     def data_path(self):
-        return self._app_dir / "Data"
+        return self._app_dir
 
     @property
     def cache_path(self):
